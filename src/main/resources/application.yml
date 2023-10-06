@@ -1,2 +1,27 @@
 server:
   port: 9191
+
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb
+    username: sa
+    password: password
+  h2:
+    console:
+      enabled: on
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+# Logging
+
+logging:
+  level:
+    org:
+      springframework:
+        security: TRACE
+
+
+# Custom properties
+jwt:
+  secret: WfkbBtjQIWu2oOWzO3zdDq6XBltdqsbSUIIqVy74o96TB3NFEgEko5fwXq1RoAmw

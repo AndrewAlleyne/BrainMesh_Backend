@@ -15,6 +15,7 @@ public class User implements UserDetails {
 
     String firstname;
     String lastname;
+    String email;
     String username;
     String password;
     GrantedAuthority grantedAuthority;
@@ -22,10 +23,17 @@ public class User implements UserDetails {
     Boolean accountNonLocked;
     Boolean credentialsNonExpired;
     Boolean enabled;
-
     @Id()
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
     public String getFirstname() {
         return firstname;

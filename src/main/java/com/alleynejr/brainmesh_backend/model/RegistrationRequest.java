@@ -1,18 +1,9 @@
 package com.alleynejr.brainmesh_backend.model;
 
-public class LoginRequest extends User {
+public class RegistrationRequest extends User {
 
-    String email;
     String username;
     String password;
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
 
     public String getUsername() {
         return username;
@@ -29,4 +20,6 @@ public class LoginRequest extends User {
     public void setPassword(String password) {
         this.password = password;
     }
+
+
 }
