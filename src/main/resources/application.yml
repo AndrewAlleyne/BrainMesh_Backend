@@ -25,3 +25,7 @@ logging:
 # Custom properties
 jwt:
   secret: WfkbBtjQIWu2oOWzO3zdDq6XBltdqsbSUIIqVy74o96TB3NFEgEko5fwXq1RoAmw
+
+refreshToken:
+  time: 2000
+#  time: 1 209 600 000

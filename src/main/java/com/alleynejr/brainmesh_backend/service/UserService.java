@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -65,7 +66,16 @@ public class UserService {
 
         Authentication authenticationObject = authenticationManager.authenticate(usernamePasswordAuthenticationToken);
 
-        System.out.println(authenticationObject.isAuthenticated());
+        SecurityContextHolder.getContext().setAuthentication(authenticationObject);
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        System.out.println("Security context " + authentication);
+
+        return jwtService.generateToken(user);
+    }
+
+    public String generateToken(User user) {
 
         return jwtService.generateToken(user);
     }

@@ -1,6 +1,9 @@
 package com.alleynejr.brainmesh_backend.config;
 
 
+import com.alleynejr.brainmesh_backend.config.filters.JWTFilter;
+import com.alleynejr.brainmesh_backend.service.JwtService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -15,6 +18,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.LogoutHandler;
 
 import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
@@ -23,8 +28,18 @@ import static org.springframework.security.web.util.matcher.AntPathRequestMatche
 public class SecurityConfig {
 
 
+    @Autowired
+    JwtService jwtService;
+
+    @Autowired
+    CustomUserDetailsService customUserDetailsService;
+
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+
+        http.addFilterBefore(new JWTFilter(customUserDetailsService, jwtService, authenticationManagerBean(http)), UsernamePasswordAuthenticationFilter.class);
+
         http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(authRequest -> authRequest
                         .requestMatchers(antMatcher(HttpMethod.valueOf("/login/**"), "register/**")).permitAll()
@@ -33,9 +48,18 @@ public class SecurityConfig {
                         .requestMatchers(antMatcher("/register/**")).permitAll()
                         .requestMatchers(antMatcher("/h2-console/**")).permitAll()
                         .requestMatchers(antMatcher("/error/**")).permitAll()
-                ).sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)).httpBasic(Customizer.withDefaults()).headers(httpSecurityHeadersConfigurer -> httpSecurityHeadersConfigurer.frameOptions(frameOptionsConfig -> frameOptionsConfig.disable()));
+                        .requestMatchers(antMatcher("/generateToken/**")).permitAll()
+                        .requestMatchers(antMatcher("/refreshToken/**")).permitAll()
+                        .requestMatchers((antMatcher("/logout/**"))).hasRole("USER")
+                ).sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)).logout(httpSecurityLogoutConfigurer -> httpSecurityLogoutConfigurer
+                        .logoutUrl("/logout").addLogoutHandler(LogoutSuccessHandler())).httpBasic(Customizer.withDefaults()).headers(httpSecurityHeadersConfigurer -> httpSecurityHeadersConfigurer.frameOptions(frameOptionsConfig -> frameOptionsConfig.disable()));
 
         return http.build();
+    }
+
+    @Bean
+    public LogoutHandler LogoutSuccessHandler() {
+        return new JwtLogoutSuccessHandler();
     }
 
     @Bean
